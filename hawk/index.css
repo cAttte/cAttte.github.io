@@ -31,3 +31,27 @@ a {
 abbr {
     text-underline-offset: 2px;
 }
+
+@keyframes popup {
+    from {
+        transform: translateY(30px);
+    }
+
+    to {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 35;
+    }
+}
+
+dialog::backdrop {
+    animation: fadein 0.3s;
+}

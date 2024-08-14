@@ -1,0 +1,417 @@
+<html style="background: white">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script type="module" src="./index.js"></script>
+        <script
+            type="text/javascript"
+            not-src="./pz.js"
+            src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"
+        ></script>
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/victor/1.1.0/victor.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+        <script src="https://unpkg.com/quick-score@0.0.14/dist/quick-score.min.js"></script>
+        <script src="https://rawcdn.githack.com/nextapps-de/flexsearch/0.7.31/dist/flexsearch.bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fuzzysort@3.0.2/fuzzysort.min.js"></script>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+        <link rel="stylesheet" href="./index.css" />
+    </head>
+    <body style="background: white" data-theme="light">
+        <dialog
+            id="modal"
+            style="
+                border: none;
+                margin-bottom: 0;
+                margin-left: 0;
+                margin-right: 0;
+                width: 100%;
+                max-width: 100%;
+                outline: none;
+                border-radius: 15px 15px 0 0;
+            "
+        >
+            <div style="display: flex; text-transform: uppercase; font-size: 12.5px">
+                <span id="modal-cat"></span>
+                <span style="margin: 0 4px">›</span>
+                <span id="modal-id"></span>
+            </div>
+            <div id="modal-name" style="font-size: 18px; line-height: 1.3"></div>
+            <div id="modal-mat" style="font-size: 13px; font-style: italic; color: #777"></div>
+            <div id="modal-body" style="color: #444"></div>
+        </dialog>
+        <div style="position: fixed; top: 12px; right: 12px; z-index: 10; display: flex; gap: 8px">
+            <div class="dropdown">
+                <div class="dropdown-trigger" style="display: flex; z-index: 20">
+                    <input
+                        autocomplete="off"
+                        placeholder="Buscar componentes..."
+                        id="search-input"
+                        class="input is-rounded"
+                        style="
+                            padding: 0;
+                            transform: translateX(20px);
+                            width: 0px;
+                            transition: 0.5s;
+                            border-color: var(--bulma-border);
+                            box-shadow: none;
+                            border-right: none;
+                            border-bottom-right-radius: 0;
+                            border-top-right-radius: 0;
+                        "
+                    />
+                    <button id="search-button" class="button is-rounded" style="transition: 0.5s">
+                        <!-- prettier-ignore -->
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                    </button>
+                </div>
+                <div class="dropdown-menu" style="display: block; margin-top: -25px; width: 297px; z-index: 10">
+                    <div
+                        id="results"
+                        class="dropdown-content"
+                        style="
+                            opacity: 0;
+                            max-height: 400px;
+                            overflow-y: auto;
+                            padding-top: 27.5px;
+                            border-bottom-left-radius: 24px;
+                            border-bottom-right-radius: 24px;
+                        "
+                    ></div>
+                </div>
+            </div>
+            <button id="fullscreen-in" class="button is-rounded" onclick="document.documentElement.requestFullscreen()">
+                <!-- prettier-ignore -->
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /></svg>
+            </button>
+            <button
+                id="fullscreen-out"
+                class="button is-rounded"
+                style="display: none"
+                onclick="document.exitFullscreen()"
+            >
+                <!-- prettier-ignore -->
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 19v-2a2 2 0 0 1 2 -2h2" /><path d="M15 5v2a2 2 0 0 0 2 2h2" /><path d="M5 15h2a2 2 0 0 1 2 2v2" /><path d="M5 9h2a2 2 0 0 0 2 -2v-2" /></svg>
+            </button>
+        </div>
+        <main
+            id="map"
+            style="background: white; display: flex; justify-content: center; width: 100%; height: 100%; padding: 15px"
+        >
+            <!-- UXP: copy(require("photoshop").app.activeDocument.layers[0].layers.map(lay => `<a data-id="${lay.name}"><rect x="${lay.bounds.left}" y="${lay.bounds.top}" fill="#000" opacity="0" width="${lay.bounds.right - lay.bounds.left}" height="${lay.bounds.bottom - lay.bounds.top}"></rect></a>`).join("\n")) -->
+            <!-- prettier-ignore -->
+            <svg id="map-svg" style="background: white" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 4016 2339">
+                <image width="4016" height="2339" xlink:href="./hawkmap.png"></image>
+                <a data-id="76"><rect x="526" y="964" fill="#000" opacity="0" width="306" height="142"></rect></a>
+                <a data-id="76"><rect x="813" y="1078" fill="#000" opacity="0" width="263" height="113"></rect></a>
+                <a data-id="76"><rect x="673" y="1027" fill="#000" opacity="0" width="298" height="109"></rect></a>
+                <a data-id="75"><rect x="1339" y="1146" fill="#000" opacity="0" width="187" height="68"></rect></a>
+                <a data-id="26"><rect x="1883" y="1355" fill="#000" opacity="0" width="50" height="107"></rect></a>
+                <a data-id="25"><rect x="1821" y="1370" fill="#000" opacity="0" width="61" height="111"></rect></a>
+                <a data-id="E43"><rect x="1167" y="1735" fill="#000" opacity="0" width="94" height="83"></rect></a>
+                <a data-id="C5"><rect x="17" y="649" fill="#000" opacity="0" width="282" height="100"></rect></a>
+                <a data-id="C4"><rect x="634" y="854" fill="#000" opacity="0" width="192" height="95"></rect></a>
+                <a data-id="C4"><rect x="492" y="795" fill="#000" opacity="0" width="298" height="93"></rect></a>
+                <a data-id="C4"><rect x="338" y="721" fill="#000" opacity="0" width="291" height="109"></rect></a>
+                <a data-id="C1"><rect x="833" y="890" fill="#000" opacity="0" width="156" height="128"></rect></a>
+                <a data-id="C1"><rect x="1081" y="981" fill="#000" opacity="0" width="213" height="143"></rect></a>
+                <a data-id="C1"><rect x="980" y="908" fill="#000" opacity="0" width="190" height="150"></rect></a>
+                <a data-id="8"><rect x="1036" y="1208" fill="#000" opacity="0" width="220" height="135"></rect></a>
+                <a data-id="3"><rect x="650" y="1983" fill="#000" opacity="0" width="218" height="68"></rect></a>
+                <a data-id="E28"><rect x="666" y="2070" fill="#000" opacity="0" width="116" height="94"></rect></a>
+                <a data-id="3"><rect x="552" y="2175" fill="#000" opacity="0" width="357" height="138"></rect></a>
+                <a data-id="E1"><rect x="1436" y="2019" fill="#000" opacity="0" width="225" height="208"></rect></a>
+                <a data-id="E3"><rect x="1235" y="2046" fill="#000" opacity="0" width="162" height="118"></rect></a>
+                <a data-id="E2"><rect x="1310" y="2166" fill="#000" opacity="0" width="80" height="73"></rect></a>
+                <a data-id="E1"><rect x="1484" y="2101" fill="#000" opacity="0" width="279" height="137"></rect></a>
+                <a data-id="66"><rect x="3140" y="1129" fill="#000" opacity="0" width="148" height="88"></rect></a>
+                <a data-id="66"><rect x="3020" y="1201" fill="#000" opacity="0" width="217" height="114"></rect></a>
+                <a data-id="E49"><rect x="2102" y="769" fill="#000" opacity="0" width="84" height="85"></rect></a>
+                <a data-id="E50"><rect x="2231" y="701" fill="#000" opacity="0" width="150" height="92"></rect></a>
+                <a data-id="E52"><rect x="2490" y="665" fill="#000" opacity="0" width="37" height="29"></rect></a>
+                <a data-id="E53"><rect x="2528" y="654" fill="#000" opacity="0" width="40" height="27"></rect></a>
+                <a data-id="E54"><rect x="2568" y="641" fill="#000" opacity="0" width="39" height="26"></rect></a>
+                <a data-id="E54"><rect x="2600" y="675" fill="#000" opacity="0" width="47" height="25"></rect></a>
+                <a data-id="E53"><rect x="2567" y="690" fill="#000" opacity="0" width="32" height="19"></rect></a>
+                <a data-id="E52"><rect x="2522" y="697" fill="#000" opacity="0" width="45" height="27"></rect></a>
+                <a data-id="C7"><rect x="2711" y="496" fill="#000" opacity="0" width="58" height="97"></rect></a>
+                <a data-id="56"><rect x="2672" y="502" fill="#000" opacity="0" width="38" height="89"></rect></a>
+                <a data-id="55"><rect x="2553" y="419" fill="#000" opacity="0" width="97" height="166"></rect></a>
+                <a data-id="55"><rect x="2478" y="293" fill="#000" opacity="0" width="123" height="206"></rect></a>
+                <a data-id="C6"><rect x="2682" y="263" fill="#000" opacity="0" width="91" height="161"></rect></a>
+                <a data-id="C6"><rect x="2626" y="175" fill="#000" opacity="0" width="92" height="147"></rect></a>
+                <a data-id="E55"><rect x="2510" y="19" fill="#000" opacity="0" width="130" height="104"></rect></a>
+                <a data-id="57"><rect x="2273" y="127" fill="#000" opacity="0" width="162" height="86"></rect></a>
+                <a data-id="C8"><rect x="2806" y="479" fill="#000" opacity="0" width="117" height="162"></rect></a>
+                <a data-id="E46"><rect x="2700" y="1186" fill="#000" opacity="0" width="48" height="28"></rect></a>
+                <a data-id="E46"><rect x="2744" y="1207" fill="#000" opacity="0" width="28" height="40"></rect></a>
+                <a data-id="E79"><rect x="2692" y="1215" fill="#000" opacity="0" width="31" height="50"></rect></a>
+                <a data-id="E82"><rect x="2648" y="1195" fill="#000" opacity="0" width="44" height="29"></rect></a>
+                <a data-id="E80"><rect x="2650" y="1225" fill="#000" opacity="0" width="36" height="55"></rect></a>
+                <a data-id="30"><rect x="2325" y="1365" fill="#000" opacity="0" width="126" height="66"></rect></a>
+                <a data-id="69"><rect x="2570" y="1360" fill="#000" opacity="0" width="88" height="87"></rect></a>
+                <a data-id="E45"><rect x="2570" y="1213" fill="#000" opacity="0" width="46" height="109"></rect></a>
+                <a data-id="44"><rect x="2480" y="1282" fill="#000" opacity="0" width="89" height="111"></rect></a>
+                <a data-id="42"><rect x="2394" y="1034" fill="#000" opacity="0" width="52" height="81"></rect></a>
+                <a data-id="39"><rect x="2322" y="1022" fill="#000" opacity="0" width="69" height="45"></rect></a>
+                <a data-id="P2"><rect x="2323" y="831" fill="#000" opacity="0" width="93" height="189"></rect></a>
+                <a data-id="P8"><rect x="2713" y="767" fill="#000" opacity="0" width="80" height="147"></rect></a>
+                <a data-id="P2"><rect x="2508" y="753" fill="#000" opacity="0" width="203" height="194"></rect></a>
+                <a data-id="P2"><rect x="2443" y="801" fill="#000" opacity="0" width="171" height="179"></rect></a>
+                <a data-id="A9"><rect x="2383" y="736" fill="#000" opacity="0" width="107" height="58"></rect></a>
+                <a data-id="54"><rect x="2691" y="663" fill="#000" opacity="0" width="101" height="71"></rect></a>
+                <a data-id="58"><rect x="2796" y="648" fill="#000" opacity="0" width="113" height="59"></rect></a>
+                <a data-id="59"><rect x="2918" y="678" fill="#000" opacity="0" width="109" height="59"></rect></a>
+                <a data-id="53"><rect x="2805" y="714" fill="#000" opacity="0" width="101" height="67"></rect></a>
+                <a data-id="61"><rect x="2978" y="913" fill="#000" opacity="0" width="116" height="104"></rect></a>
+                <a data-id="E95"><rect x="3210" y="845" fill="#000" opacity="0" width="53" height="105"></rect></a>
+                <a data-id="65"><rect x="3249" y="1038" fill="#000" opacity="0" width="58" height="33"></rect></a>
+                <a data-id="67"><rect x="3282" y="983" fill="#000" opacity="0" width="60" height="60"></rect></a>
+                <a data-id="63"><rect x="3177" y="988" fill="#000" opacity="0" width="58" height="76"></rect></a>
+                <a data-id="62"><rect x="3056" y="1109" fill="#000" opacity="0" width="62" height="77"></rect></a>
+                <a data-id="64"><rect x="3066" y="1058" fill="#000" opacity="0" width="105" height="42"></rect></a>
+                <a data-id="60"><rect x="2883" y="920" fill="#000" opacity="0" width="78" height="41"></rect></a>
+                <a data-id="50"><rect x="2861" y="1071" fill="#000" opacity="0" width="62" height="49"></rect></a>
+                <a data-id="85"><rect x="2870" y="1151" fill="#000" opacity="0" width="71" height="43"></rect></a>
+                <a data-id="P11"><rect x="2918" y="1236" fill="#000" opacity="0" width="37" height="50"></rect></a>
+                <a data-id="P11"><rect x="2885" y="1192" fill="#000" opacity="0" width="36" height="40"></rect></a>
+                <a data-id="46"><rect x="2830" y="1273" fill="#000" opacity="0" width="64" height="47"></rect></a>
+                <a data-id="68"><rect x="2791" y="1270" fill="#000" opacity="0" width="38" height="54"></rect></a>
+                <a data-id="E48"><rect x="2645" y="1284" fill="#000" opacity="0" width="48" height="53"></rect></a>
+                <a data-id="45"><rect x="2692" y="1265" fill="#000" opacity="0" width="49" height="33"></rect></a>
+                <a data-id="E63"><rect x="2741" y="1247" fill="#000" opacity="0" width="52" height="65"></rect></a>
+                <a data-id="P13"><rect x="2819" y="1111" fill="#000" opacity="0" width="35" height="43"></rect></a>
+                <a data-id="P13"><rect x="2802" y="1151" fill="#000" opacity="0" width="46" height="24"></rect></a>
+                <a data-id="49"><rect x="2827" y="1046" fill="#000" opacity="0" width="42" height="22"></rect></a>
+                <a data-id="P12"><rect x="2769" y="1068" fill="#000" opacity="0" width="68" height="30"></rect></a>
+                <a data-id="E47"><rect x="2775" y="1128" fill="#000" opacity="0" width="40" height="23"></rect></a>
+                <a data-id="E47"><rect x="2778" y="1129" fill="#000" opacity="0" width="21" height="65"></rect></a>
+                <a data-id="E47"><rect x="2778" y="1191" fill="#000" opacity="0" width="36" height="46"></rect></a>
+                <a data-id="52"><rect x="2765" y="915" fill="#000" opacity="0" width="70" height="61"></rect></a>
+                <a data-id="356"><rect x="2614" y="949" fill="#000" opacity="0" width="56" height="41"></rect></a>
+                <a data-id="E56"><rect x="2559" y="982" fill="#000" opacity="0" width="101" height="36"></rect></a>
+                <a data-id="51"><rect x="2765" y="982" fill="#000" opacity="0" width="73" height="62"></rect></a>
+                <a data-id="47"><rect x="2691" y="993" fill="#000" opacity="0" width="71" height="55"></rect></a>
+                <a data-id="P10"><rect x="2666" y="1050" fill="#000" opacity="0" width="83" height="40"></rect></a>
+                <a data-id="48"><rect x="2612" y="1037" fill="#000" opacity="0" width="51" height="36"></rect></a>
+                <a data-id="P3"><rect x="2478" y="1039" fill="#000" opacity="0" width="29" height="59"></rect></a>
+                <a data-id="P7"><rect x="2507" y="1024" fill="#000" opacity="0" width="52" height="49"></rect></a>
+                <a data-id="43"><rect x="2585" y="1110" fill="#000" opacity="0" width="35" height="39"></rect></a>
+                <a data-id="P4"><rect x="2526" y="1094" fill="#000" opacity="0" width="56" height="28"></rect></a>
+                <a data-id="P5"><rect x="2455" y="1108" fill="#000" opacity="0" width="54" height="36"></rect></a>
+                <a data-id="F11"><rect x="2449" y="1148" fill="#000" opacity="0" width="76" height="31"></rect></a>
+                <a data-id="P6"><rect x="2378" y="1190" fill="#000" opacity="0" width="26" height="20"></rect></a>
+                <a data-id="P6"><rect x="2393" y="1143" fill="#000" opacity="0" width="12" height="63"></rect></a>
+                <a data-id="364"><rect x="2380" y="1151" fill="#000" opacity="0" width="12" height="23"></rect></a>
+                <a data-id="E64"><rect x="2320" y="1196" fill="#000" opacity="0" width="52" height="29"></rect></a>
+                <a data-id="40"><rect x="2368" y="1139" fill="#000" opacity="0" width="12" height="20"></rect></a>
+                <a data-id="40"><rect x="2355" y="1153" fill="#000" opacity="0" width="23" height="25"></rect></a>
+                <a data-id="40"><rect x="2373" y="1116" fill="#000" opacity="0" width="16" height="29"></rect></a>
+                <a data-id="41"><rect x="2405" y="1205" fill="#000" opacity="0" width="60" height="41"></rect></a>
+                <a data-id="37"><rect x="2400" y="1247" fill="#000" opacity="0" width="76" height="64"></rect></a>
+                <a data-id="38"><rect x="2300" y="1148" fill="#000" opacity="0" width="52" height="47"></rect></a>
+                <a data-id="P9"><rect x="2279" y="1113" fill="#000" opacity="0" width="30" height="34"></rect></a>
+                <a data-id="A6"><rect x="2310" y="1070" fill="#000" opacity="0" width="47" height="70"></rect></a>
+                <a data-id="P9"><rect x="2232" y="1089" fill="#000" opacity="0" width="66" height="30"></rect></a>
+                <a data-id="24"><rect x="2221" y="1120" fill="#000" opacity="0" width="48" height="33"></rect></a>
+                <a data-id="E51"><rect x="2098" y="1095" fill="#000" opacity="0" width="118" height="40"></rect></a>
+                <a data-id="P1"><rect x="2138" y="894" fill="#000" opacity="0" width="181" height="175"></rect></a>
+                <a data-id="E14"><rect x="209" y="1310" fill="#000" opacity="0" width="72" height="23"></rect></a>
+                <a data-id="E15"><rect x="212" y="1333" fill="#000" opacity="0" width="92" height="25"></rect></a>
+                <a data-id="E97"><rect x="256" y="1253" fill="#000" opacity="0" width="24" height="57"></rect></a>
+                <a data-id="E98"><rect x="280" y="1252" fill="#000" opacity="0" width="21" height="63"></rect></a>
+                <a data-id="E26"><rect x="185" y="1260" fill="#000" opacity="0" width="65" height="40"></rect></a>
+                <a data-id="E96"><rect x="305" y="1242" fill="#000" opacity="0" width="42" height="71"></rect></a>
+                <a data-id="E37"><rect x="257" y="1203" fill="#000" opacity="0" width="66" height="37"></rect></a>
+                <a data-id="E37"><rect x="218" y="1192" fill="#000" opacity="0" width="59" height="46"></rect></a>
+                <a data-id="E84"><rect x="129" y="1263" fill="#000" opacity="0" width="55" height="39"></rect></a>
+                <a data-id="E26"><rect x="125" y="1305" fill="#000" opacity="0" width="76" height="51"></rect></a>
+                <a data-id="E40"><rect x="63" y="1303" fill="#000" opacity="0" width="59" height="72"></rect></a>
+                <a data-id="E29"><rect x="280" y="1151" fill="#000" opacity="0" width="139" height="46"></rect></a>
+                <a data-id="E29"><rect x="352" y="1184" fill="#000" opacity="0" width="115" height="152"></rect></a>
+                <a data-id="E30"><rect x="479" y="1176" fill="#000" opacity="0" width="90" height="56"></rect></a>
+                <a data-id="E30"><rect x="421" y="1139" fill="#000" opacity="0" width="142" height="39"></rect></a>
+                <a data-id="E73"><rect x="637" y="1307" fill="#000" opacity="0" width="87" height="85"></rect></a>
+                <a data-id="E31"><rect x="516" y="1255" fill="#000" opacity="0" width="116" height="104"></rect></a>
+                <a data-id="E38"><rect x="474" y="1244" fill="#000" opacity="0" width="27" height="91"></rect></a>
+                <a data-id="E38"><rect x="474" y="1315" fill="#000" opacity="0" width="40" height="52"></rect></a>
+                <a data-id="E27"><rect x="380" y="1339" fill="#000" opacity="0" width="85" height="58"></rect></a>
+                <a data-id="66"><rect x="1613" y="717" fill="#000" opacity="0" width="90" height="41"></rect></a>
+                <a data-id="E68"><rect x="1547" y="692" fill="#000" opacity="0" width="53" height="56"></rect></a>
+                <a data-id="15"><rect x="1309" y="683" fill="#000" opacity="0" width="74" height="28"></rect></a>
+                <a data-id="16"><rect x="1384" y="673" fill="#000" opacity="0" width="21" height="41"></rect></a>
+                <a data-id="16"><rect x="1366" y="711" fill="#000" opacity="0" width="43" height="27"></rect></a>
+                <a data-id="C5"><rect x="1360" y="352" fill="#000" opacity="0" width="94" height="58"></rect></a>
+                <a data-id="C2"><rect x="1335" y="419" fill="#000" opacity="0" width="78" height="45"></rect></a>
+                <a data-id="E44"><rect x="1385" y="490" fill="#000" opacity="0" width="108" height="56"></rect></a>
+                <a data-id="E91"><rect x="1393" y="560" fill="#000" opacity="0" width="69" height="48"></rect></a>
+                <a data-id="E72"><rect x="1469" y="591" fill="#000" opacity="0" width="60" height="32"></rect></a>
+                <a data-id="E72"><rect x="1427" y="614" fill="#000" opacity="0" width="91" height="44"></rect></a>
+                <a data-id="E83"><rect x="1424" y="661" fill="#000" opacity="0" width="75" height="50"></rect></a>
+                <a data-id="E71"><rect x="1444" y="714" fill="#000" opacity="0" width="100" height="61"></rect></a>
+                <a data-id="E88"><rect x="1463" y="776" fill="#000" opacity="0" width="58" height="42"></rect></a>
+                <a data-id="E44"><rect x="1502" y="839" fill="#000" opacity="0" width="44" height="48"></rect></a>
+                <a data-id="81"><rect x="1605" y="1074" fill="#000" opacity="0" width="77" height="36"></rect></a>
+                <a data-id="79"><rect x="1552" y="1109" fill="#000" opacity="0" width="85" height="42"></rect></a>
+                <a data-id="F10"><rect x="1619" y="1253" fill="#000" opacity="0" width="82" height="121"></rect></a>
+                <a data-id="F8"><rect x="1699" y="1237" fill="#000" opacity="0" width="78" height="45"></rect></a>
+                <a data-id="9"><rect x="1765" y="1278" fill="#000" opacity="0" width="46" height="51"></rect></a>
+                <a data-id="20"><rect x="1769" y="1178" fill="#000" opacity="0" width="81" height="59"></rect></a>
+                <a data-id="F7"><rect x="1707" y="1155" fill="#000" opacity="0" width="55" height="71"></rect></a>
+                <a data-id="22"><rect x="1794" y="924" fill="#000" opacity="0" width="229" height="224"></rect></a>
+                <a data-id="21"><rect x="1865" y="1154" fill="#000" opacity="0" width="113" height="43"></rect></a>
+                <a data-id="23"><rect x="1979" y="1182" fill="#000" opacity="0" width="68" height="33"></rect></a>
+                <a data-id="23"><rect x="1943" y="1199" fill="#000" opacity="0" width="43" height="34"></rect></a>
+                <a data-id="F10"><rect x="1987" y="1220" fill="#000" opacity="0" width="73" height="39"></rect></a>
+                <a data-id="11"><rect x="2001" y="1260" fill="#000" opacity="0" width="56" height="38"></rect></a>
+                <a data-id="36"><rect x="2224" y="1277" fill="#000" opacity="0" width="36" height="67"></rect></a>
+                <a data-id="35"><rect x="2180" y="1292" fill="#000" opacity="0" width="41" height="68"></rect></a>
+                <a data-id="28"><rect x="2115" y="1261" fill="#000" opacity="0" width="64" height="52"></rect></a>
+                <a data-id="26"><rect x="2114" y="1321" fill="#000" opacity="0" width="38" height="54"></rect></a>
+                <a data-id="33"><rect x="2062" y="1314" fill="#000" opacity="0" width="50" height="66"></rect></a>
+                <a data-id="F1"><rect x="1981" y="1348" fill="#000" opacity="0" width="56" height="50"></rect></a>
+                <a data-id="72"><rect x="2242" y="1501" fill="#000" opacity="0" width="72" height="73"></rect></a>
+                <a data-id="31"><rect x="2210" y="1404" fill="#000" opacity="0" width="63" height="65"></rect></a>
+                <a data-id="27"><rect x="2121" y="1413" fill="#000" opacity="0" width="87" height="56"></rect></a>
+                <a data-id="29"><rect x="2007" y="1402" fill="#000" opacity="0" width="73" height="67"></rect></a>
+                <a data-id="F3"><rect x="2051" y="1475" fill="#000" opacity="0" width="84" height="59"></rect></a>
+                <a data-id="U7"><rect x="2146" y="1478" fill="#000" opacity="0" width="51" height="60"></rect></a>
+                <a data-id="F2"><rect x="2141" y="1543" fill="#000" opacity="0" width="80" height="40"></rect></a>
+                <a data-id="E34"><rect x="672" y="1180" fill="#000" opacity="0" width="39" height="33"></rect></a>
+                <a data-id="E34"><rect x="637" y="1222" fill="#000" opacity="0" width="65" height="18"></rect></a>
+                <a data-id="E33"><rect x="703" y="1212" fill="#000" opacity="0" width="77" height="35"></rect></a>
+                <a data-id="E36"><rect x="683" y="1256" fill="#000" opacity="0" width="63" height="25"></rect></a>
+                <a data-id="E36"><rect x="632" y="1240" fill="#000" opacity="0" width="52" height="38"></rect></a>
+                <a data-id="E35"><rect x="594" y="1169" fill="#000" opacity="0" width="77" height="50"></rect></a>
+                <a data-id="A2"><rect x="306" y="1406" fill="#000" opacity="0" width="206" height="88"></rect></a>
+                <a data-id="1"><rect x="367" y="1785" fill="#000" opacity="0" width="99" height="142"></rect></a>
+                <a data-id="E95"><rect x="467" y="1849" fill="#000" opacity="0" width="102" height="51"></rect></a>
+                <a data-id="E23"><rect x="484" y="1909" fill="#000" opacity="0" width="72" height="70"></rect></a>
+                <a data-id="E22"><rect x="380" y="1933" fill="#000" opacity="0" width="104" height="51"></rect></a>
+                <a data-id="E21"><rect x="379" y="1984" fill="#000" opacity="0" width="123" height="31"></rect></a>
+                <a data-id="2"><rect x="414" y="2017" fill="#000" opacity="0" width="83" height="38"></rect></a>
+                <a data-id="4"><rect x="501" y="1733" fill="#000" opacity="0" width="152" height="94"></rect></a>
+                <a data-id="86"><rect x="630" y="1645" fill="#000" opacity="0" width="92" height="68"></rect></a>
+                <a data-id="E20"><rect x="724" y="1628" fill="#000" opacity="0" width="83" height="85"></rect></a>
+                <a data-id="E95"><rect x="686" y="1849" fill="#000" opacity="0" width="74" height="49"></rect></a>
+                <a data-id="86"><rect x="770" y="1736" fill="#000" opacity="0" width="98" height="43"></rect></a>
+                <a data-id="6"><rect x="847" y="1779" fill="#000" opacity="0" width="45" height="67"></rect></a>
+                <a data-id="E99"><rect x="759" y="1800" fill="#000" opacity="0" width="87" height="68"></rect></a>
+                <a data-id="7"><rect x="1125" y="1672" fill="#000" opacity="0" width="73" height="51"></rect></a>
+                <a data-id="U4"><rect x="1031" y="1802" fill="#000" opacity="0" width="65" height="65"></rect></a>
+                <a data-id="A11"><rect x="947" y="1874" fill="#000" opacity="0" width="85" height="42"></rect></a>
+                <a data-id="5"><rect x="988" y="1918" fill="#000" opacity="0" width="61" height="49"></rect></a>
+                <a data-id="E5"><rect x="891" y="1930" fill="#000" opacity="0" width="62" height="49"></rect></a>
+                <a data-id="U2"><rect x="953" y="1974" fill="#000" opacity="0" width="87" height="65"></rect></a>
+                <a data-id="E6"><rect x="888" y="1992" fill="#000" opacity="0" width="59" height="59"></rect></a>
+                <a data-id="U1"><rect x="1057" y="1992" fill="#000" opacity="0" width="112" height="159"></rect></a>
+                <a data-id="U3"><rect x="1112" y="1902" fill="#000" opacity="0" width="88" height="87"></rect></a>
+                <a data-id="15"><rect x="1234" y="1932" fill="#000" opacity="0" width="118" height="79"></rect></a>
+                <a data-id="E10"><rect x="1296" y="1853" fill="#000" opacity="0" width="119" height="76"></rect></a>
+                <a data-id="E10"><rect x="1357" y="1777" fill="#000" opacity="0" width="104" height="73"></rect></a>
+                <a data-id="16"><rect x="1499" y="1836" fill="#000" opacity="0" width="152" height="106"></rect></a>
+                <a data-id="E4"><rect x="1683" y="1909" fill="#000" opacity="0" width="130" height="124"></rect></a>
+                <a data-id="C4"><rect x="3659" y="1833" fill="#000" opacity="0" width="297" height="62"></rect></a>
+                <a data-id="C4"><rect x="3491" y="1773" fill="#000" opacity="0" width="310" height="81"></rect></a>
+                <a data-id="C4"><rect x="3317" y="1707" fill="#000" opacity="0" width="331" height="93"></rect></a>
+                <a data-id="C3"><rect x="2874" y="1676" fill="#000" opacity="0" width="196" height="110"></rect></a>
+                <a data-id="C1"><rect x="2795" y="1533" fill="#000" opacity="0" width="255" height="133"></rect></a>
+                <a data-id="83"><rect x="3019" y="1329" fill="#000" opacity="0" width="158" height="87"></rect></a>
+                <a data-id="E81"><rect x="3020" y="1417" fill="#000" opacity="0" width="158" height="98"></rect></a>
+                <a data-id="69"><rect x="3178" y="1327" fill="#000" opacity="0" width="123" height="163"></rect></a>
+                <a data-id="E57"><rect x="3367" y="1285" fill="#000" opacity="0" width="95" height="112"></rect></a>
+                <a data-id="U14"><rect x="3533" y="1224" fill="#000" opacity="0" width="87" height="69"></rect></a>
+                <a data-id="U14"><rect x="3469" y="1239" fill="#000" opacity="0" width="88" height="90"></rect></a>
+                <a data-id="F12"><rect x="3688" y="1239" fill="#000" opacity="0" width="76" height="55"></rect></a>
+                <a data-id="43"><rect x="3610" y="1348" fill="#000" opacity="0" width="50" height="28"></rect></a>
+                <a data-id="A8"><rect x="3626" y="1467" fill="#000" opacity="0" width="129" height="91"></rect></a>
+                <a data-id="E66"><rect x="3480" y="1489" fill="#000" opacity="0" width="45" height="23"></rect></a>
+                <a data-id="E66"><rect x="3444" y="1488" fill="#000" opacity="0" width="57" height="46"></rect></a>
+                <a data-id="E62"><rect x="3501" y="1513" fill="#000" opacity="0" width="109" height="45"></rect></a>
+                <a data-id="E61"><rect x="3526" y="1446" fill="#000" opacity="0" width="88" height="56"></rect></a>
+                <a data-id="E58"><rect x="3471" y="1360" fill="#000" opacity="0" width="63" height="37"></rect></a>
+                <a data-id="E59"><rect x="3444" y="1397" fill="#000" opacity="0" width="90" height="39"></rect></a>
+                <a data-id="E60"><rect x="3535" y="1414" fill="#000" opacity="0" width="80" height="32"></rect></a>
+                <a data-id="E60"><rect x="3535" y="1378" fill="#000" opacity="0" width="92" height="38"></rect></a>
+                <a data-id="A7"><rect x="3615" y="1417" fill="#000" opacity="0" width="47" height="44"></rect></a>
+                <a data-id="E87"><rect x="3662" y="1415" fill="#000" opacity="0" width="16" height="28"></rect></a>
+                <a data-id="E87"><rect x="3628" y="1391" fill="#000" opacity="0" width="52" height="26"></rect></a>
+                <a data-id="E85"><rect x="3680" y="1388" fill="#000" opacity="0" width="36" height="45"></rect></a>
+                <a data-id="E85"><rect x="3660" y="1363" fill="#000" opacity="0" width="57" height="28"></rect></a>
+                <a data-id="E89"><rect x="3668" y="1326" fill="#000" opacity="0" width="48" height="36"></rect></a>
+                <a data-id="47"><rect x="3870" y="1242" fill="#000" opacity="0" width="62" height="84"></rect></a>
+                <a data-id="E65"><rect x="3717" y="1324" fill="#000" opacity="0" width="54" height="49"></rect></a>
+                <a data-id="84"><rect x="3771" y="1302" fill="#000" opacity="0" width="43" height="85"></rect></a>
+                <a data-id="E86"><rect x="3721" y="1374" fill="#000" opacity="0" width="36" height="52"></rect></a>
+                <a data-id="E74"><rect x="3757" y="1387" fill="#000" opacity="0" width="56" height="71"></rect></a>
+                <a data-id="82"><rect x="3596" y="2127" fill="#000" opacity="0" width="88" height="61"></rect></a>
+                <a data-id="E67"><rect x="3704" y="2140" fill="#000" opacity="0" width="65" height="52"></rect></a>
+                <a data-id="E55"><rect x="3689" y="2067" fill="#000" opacity="0" width="148" height="70"></rect></a>
+                <a data-id="77"><rect x="3312" y="1834" fill="#000" opacity="0" width="123" height="72"></rect></a>
+                <a data-id="80"><rect x="3132" y="1793" fill="#000" opacity="0" width="108" height="57"></rect></a>
+                <a data-id="U8"><rect x="2586" y="1876" fill="#000" opacity="0" width="169" height="170"></rect></a>
+                <a data-id="U11"><rect x="2758" y="1856" fill="#000" opacity="0" width="108" height="72"></rect></a>
+                <a data-id="U10"><rect x="2658" y="1811" fill="#000" opacity="0" width="80" height="64"></rect></a>
+                <a data-id="78"><rect x="2773" y="1790" fill="#000" opacity="0" width="77" height="56"></rect></a>
+                <a data-id="F6"><rect x="2742" y="1705" fill="#000" opacity="0" width="42" height="78"></rect></a>
+                <a data-id="73"><rect x="2537" y="1672" fill="#000" opacity="0" width="49" height="75"></rect></a>
+                <a data-id="F5"><rect x="2732" y="1645" fill="#000" opacity="0" width="51" height="53"></rect></a>
+                <a data-id="72"><rect x="2683" y="1608" fill="#000" opacity="0" width="60" height="39"></rect></a>
+                <a data-id="75"><rect x="2695" y="1539" fill="#000" opacity="0" width="69" height="69"></rect></a>
+                <a data-id="74"><rect x="2597" y="1526" fill="#000" opacity="0" width="75" height="75"></rect></a>
+                <a data-id="U13"><rect x="2537" y="1475" fill="#000" opacity="0" width="72" height="49"></rect></a>
+                <a data-id="A12"><rect x="2477" y="1424" fill="#000" opacity="0" width="77" height="50"></rect></a>
+                <a data-id="34"><rect x="2335" y="1431" fill="#000" opacity="0" width="78" height="40"></rect></a>
+                <a data-id="32"><rect x="2413" y="1463" fill="#000" opacity="0" width="64" height="37"></rect></a>
+                <a data-id="U6"><rect x="2322" y="1499" fill="#000" opacity="0" width="88" height="54"></rect></a>
+                <a data-id="U12"><rect x="2409" y="1556" fill="#000" opacity="0" width="63" height="56"></rect></a>
+                <a data-id="U5"><rect x="2379" y="1654" fill="#000" opacity="0" width="56" height="60"></rect></a>
+                <a data-id="U9"><rect x="2239" y="1634" fill="#000" opacity="0" width="87" height="43"></rect></a>
+                <a data-id="E25"><rect x="2305" y="1774" fill="#000" opacity="0" width="137" height="89"></rect></a>
+                <a data-id="E24"><rect x="2138" y="1728" fill="#000" opacity="0" width="144" height="82"></rect></a>
+                <a data-id="A1"><rect x="1900" y="1758" fill="#000" opacity="0" width="201" height="151"></rect></a>
+                <a data-id="E10"><rect x="1694" y="1724" fill="#000" opacity="0" width="99" height="74"></rect></a>
+                <a data-id="17"><rect x="1824" y="1606" fill="#000" opacity="0" width="57" height="32"></rect></a>
+                <a data-id="A10"><rect x="1827" y="1563" fill="#000" opacity="0" width="53" height="43"></rect></a>
+                <a data-id="19"><rect x="1900" y="1464" fill="#000" opacity="0" width="35" height="53"></rect></a>
+                <a data-id="70"><rect x="1860" y="1493" fill="#000" opacity="0" width="40" height="38"></rect></a>
+                <a data-id="71"><rect x="1935" y="1462" fill="#000" opacity="0" width="46" height="54"></rect></a>
+                <a data-id="18"><rect x="1788" y="1529" fill="#000" opacity="0" width="46" height="34"></rect></a>
+                <a data-id="E93"><rect x="1750" y="1564" fill="#000" opacity="0" width="42" height="63"></rect></a>
+                <a data-id="F4"><rect x="1698" y="1441" fill="#000" opacity="0" width="56" height="92"></rect></a>
+                <a data-id="E13"><rect x="1305" y="1477" fill="#000" opacity="0" width="62" height="38"></rect></a>
+                <a data-id="E42"><rect x="1610" y="1537" fill="#000" opacity="0" width="72" height="32"></rect></a>
+                <a data-id="E41"><rect x="1609" y="1489" fill="#000" opacity="0" width="68" height="47"></rect></a>
+                <a data-id="E94"><rect x="1551" y="1483" fill="#000" opacity="0" width="54" height="51"></rect></a>
+                <a data-id="14"><rect x="1548" y="1572" fill="#000" opacity="0" width="57" height="28"></rect></a>
+                <a data-id="E100"><rect x="1538" y="1540" fill="#000" opacity="0" width="53" height="32"></rect></a>
+                <a data-id="E39"><rect x="1649" y="1581" fill="#000" opacity="0" width="80" height="81"></rect></a>
+                <a data-id="12"><rect x="1524" y="1705" fill="#000" opacity="0" width="60" height="52"></rect></a>
+                <a data-id="13"><rect x="1475" y="1649" fill="#000" opacity="0" width="59" height="31"></rect></a>
+                <a data-id="A3"><rect x="1476" y="1682" fill="#000" opacity="0" width="45" height="41"></rect></a>
+                <a data-id="A4"><rect x="1427" y="1701" fill="#000" opacity="0" width="48" height="46"></rect></a>
+                <a data-id="A2"><rect x="1315" y="1693" fill="#000" opacity="0" width="63" height="27"></rect></a>
+                <a data-id="E78"><rect x="1306" y="1645" fill="#000" opacity="0" width="57" height="45"></rect></a>
+                <a data-id="E77"><rect x="1364" y="1616" fill="#000" opacity="0" width="48" height="70"></rect></a>
+                <a data-id="E75"><rect x="1420" y="1536" fill="#000" opacity="0" width="81" height="44"></rect></a>
+                <a data-id="E7"><rect x="1422" y="1593" fill="#000" opacity="0" width="84" height="54"></rect></a>
+                <a data-id="E90"><rect x="1362" y="1583" fill="#000" opacity="0" width="50" height="28"></rect></a>
+                <a data-id="E92"><rect x="1305" y="1608" fill="#000" opacity="0" width="56" height="33"></rect></a>
+                <a data-id="E9"><rect x="1198" y="1683" fill="#000" opacity="0" width="90" height="44"></rect></a>
+                <a data-id="E8"><rect x="1200" y="1615" fill="#000" opacity="0" width="80" height="67"></rect></a>
+                <a data-id="E32"><rect x="1296" y="1543" fill="#000" opacity="0" width="43" height="23"></rect></a>
+                <a data-id="E11"><rect x="1252" y="1514" fill="#000" opacity="0" width="53" height="29"></rect></a>
+                <a data-id="E12"><rect x="1343" y="1544" fill="#000" opacity="0" width="42" height="38"></rect></a>
+                <a data-id="E76"><rect x="1369" y="1515" fill="#000" opacity="0" width="43" height="27"></rect></a>
+                <a data-id="E16"><rect x="1393" y="1401" fill="#000" opacity="0" width="107" height="31"></rect></a>
+                <a data-id="11"><rect x="1460" y="1433" fill="#000" opacity="0" width="54" height="35"></rect></a>
+                <a data-id="A5"><rect x="1411" y="1471" fill="#000" opacity="0" width="62" height="21"></rect></a>
+                <a data-id="E101"><rect x="1412" y="1492" fill="#000" opacity="0" width="70" height="31"></rect></a>
+                <a data-id="E17"><rect x="1366" y="1297" fill="#000" opacity="0" width="126" height="47"></rect></a>
+                <a data-id="F9"><rect x="1327" y="1356" fill="#000" opacity="0" width="61" height="75"></rect></a>
+                <a data-id="10"><rect x="1273" y="1385" fill="#000" opacity="0" width="53" height="27"></rect></a>
+                <a data-id="E18"><rect x="1166" y="1412" fill="#000" opacity="0" width="115" height="48"></rect></a>
+                <a data-id="E19"><rect x="807" y="1318" fill="#000" opacity="0" width="263" height="342"></rect></a>            </svg>
+        </main>
+    </body>
+</html>

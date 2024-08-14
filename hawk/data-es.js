@@ -12,7 +12,7 @@ export default {
         {
             id: "1",
             name: "Carenado inferior de nariz",
-            detail: "composite/panal de abeja"
+            note: "composite/panal de abeja"
         },
         {
             id: "2",
@@ -25,42 +25,42 @@ export default {
         {
             id: "4",
             name: "Estructura del fuselaje delantero",
-            detail: "marcos de aleación de aluminio mecanizada y revestimiento formado"
+            note: "marcos de aleación de aluminio mecanizada y revestimiento formado"
         },
         {
             id: "5",
             name: "Carenado del compartimiento del tren de aterrizaje delantero (NLG)",
-            detail: "composite, con estructura de soporte de aleación de aluminio mecanizada"
+            note: "composite, con estructura de soporte de aleación de aluminio mecanizada"
         },
         {
             id: "6",
             name: "Estructura de la quilla del fuselaje delantero",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "7",
             name: "Interfaz y mamparo delantero de presión del compartimiento de aviónica del fuselaje delantero/central",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "8",
             name: "Radomo de la antena de satcom",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "9",
             name: "Carenado fijo trasero superior",
-            detail: "estructura de composite / panal con marco de aleación de aluminio"
+            note: "estructura de composite / panal con marco de aleación de aluminio"
         },
         {
             id: "10",
             name: "Paneles de revestimiento delanteros del fuselaje central con larguerillos externos",
-            detail: "aleación de aluminio"
+            note: "aleación de aluminio"
         },
         {
             id: "11",
             name: "Estructura de quilla/tanque de combustible principal del fuselaje central (única)",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "12",
@@ -75,40 +75,38 @@ export default {
         {
             id: "14",
             name: "Mamparo trasero del compartimiento (superior) de aviónica delantero/mamparo delantero del tanque de combustible principal",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "15",
             name: "Carenado del MP-RTIP",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "16",
             name: "Panel del radomo MP-RTIP",
-            note: "removido por claridad",
-            detail: "composite"
+            note: "composite; removido por claridad"
         },
         {
             id: "17",
             name: "Carenado de ala-fuselaje",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "18",
             name: "Mamparo trasero del compartimiento (inferior) de aviónica delantero",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "19",
             name: "Puntos de fijación delanteros de ala-fuselaje",
-            note: "dos",
-            detail: "aleación de aluminio mecanizada"
+            note: "dos, aleación de aluminio mecanizada"
         },
         {
             id: "20",
             name: "Sección del fuselaje central",
-            note: "incorpora compartimientos de aviónica delantero y trasero (presurizados)",
-            detail: "marcos de aleación de aluminio mecanizada y formados, quilla y revestimiento fresado químicamente"
+            note: "incorpora compartimientos presurizados de aviónica delantero y trasero"
+            // detail: "marcos de aleación de aluminio mecanizada y formados, quilla y revestimiento fresado químicamente"
         },
         {
             id: "21",
@@ -117,34 +115,32 @@ export default {
         {
             id: "22",
             name: "Entrada de aire de la góndola",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "23",
             name: "Puntos de fijación delanteros de la góndola/fuselaje central",
-            note: "dos",
-            detail: "aleación de aluminio mecanizada"
+            note: "dos, aleación de aluminio mecanizada"
         },
         {
             id: "24",
             name: "Conducto de entrada de aire",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "25",
             name: "Placa de deflector del tanque de combustible principal",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "26",
             name: "Marco principal circunferencial de la fijación ala-fuselaje",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "27",
             name: "Puntos de fijación traseros de ala-fuselaje",
-            note: "dos",
-            detail: "aleación de aluminio mecanizada"
+            note: "dos, aleación de aluminio mecanizada"
         },
         {
             id: "28",
@@ -173,7 +169,7 @@ export default {
         {
             id: "34",
             name: "Carenado de radomo a fuselaje trasero",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "35",
@@ -182,33 +178,33 @@ export default {
         {
             id: "36",
             name: "Placa de deflector del tanque de combustible/marco principal del fuselaje central",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "37",
             name: "Mamparo trasero del tanque de combustible",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "38",
             name: "Punto de fijación delantero del enlace superior del montaje del motor",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "39",
             name: "Marco delantero de góndola de motor",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "40",
             name: "Enlace superior del montaje del motor",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "41",
             name: "Pilón de montaje del motor",
-            note: "integral con el mamparo trasero del tanque de combustible)",
-            detail: "aleación de aluminio mecanizada"
+            note: "integral con el mamparo trasero del tanque de combustible)"
+            // detail: "aleación de aluminio mecanizada"
         },
         {
             id: "42",
@@ -217,7 +213,7 @@ export default {
         {
             id: "43",
             name: "Plataforma del motor/cortafuegos",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "44",
@@ -226,7 +222,7 @@ export default {
         {
             id: "45",
             name: "Compartimiento de aviónica trasero",
-            detail: "presurizado"
+            note: "presurizado"
         },
         {
             id: "46",
@@ -239,12 +235,12 @@ export default {
         {
             id: "48",
             name: "Yugo de montaje del motor",
-            detail: "aleación de aluminio mecanizada"
+            note: "aleación de aluminio mecanizada"
         },
         {
             id: "49",
             name: "Marco inferior trasero de la góndola",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "50",
@@ -254,7 +250,7 @@ export default {
         {
             id: "51",
             name: "Puerta de acceso al compartimiento del motor",
-            detail: "ambos lados"
+            note: "ambos lados"
         },
         {
             id: "52",
@@ -263,22 +259,22 @@ export default {
         {
             id: "53",
             name: "Marco superior trasero de la góndola",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "54",
             name: "Carenado superior de la góndola",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "55",
             name: "Superficie de cola en V cantilever de dos largueros",
-            detail: "Aurora, composite de grafito"
+            note: "Aurora, composite de grafito"
         },
         {
             id: "56",
             name: "Marco de soporte de la unidad de control de potencia (PCU)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "57",
@@ -288,48 +284,47 @@ export default {
         {
             id: "58",
             name: "Panel de carenado superior del escape del motor",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "59",
             name: "Conducto de escape del motor",
-            detail: "titanio"
+            note: "titanio"
         },
         {
             id: "60",
             name: "Larguerillo superior del fuselaje trasero/accesorio de fijación de la aleta",
-            detail: "titanio mecanizado"
+            note: "titanio mecanizado"
         },
         {
             id: "61",
             name: "Fuselaje trasero desmontable",
-            detail: "composite de grafito/panal"
+            note: "composite de grafito/panal"
         },
         {
             id: "62",
             name: "Larguerillo inferior del fuselaje trasero",
-            detail: "composite de grafito"
+            note: "composite de grafito"
         },
         {
             id: "63",
             name: "Punto de fijación superior del larguero de aleta delantera",
-            detail: "titanio"
+            note: "titanio"
         },
         {
             id: "64",
             name: "Punto de fijación inferior del larguero de aleta delantera",
-            detail: "titanio"
+            note: "titanio"
         },
         {
             id: "65",
             name: "Carenado de la aleta",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "66",
             name: "Aleta ventral",
-            note: "dos",
-            detail: "composite/panal"
+            note: "dos, composite/panal"
         },
         {
             id: "67",
@@ -343,22 +338,22 @@ export default {
         {
             id: "69",
             name: "Radomo de antena WBDL",
-            detail: "composite/panal"
+            note: "composite/panal"
         },
         {
             id: "70",
             name: "Interconexión de fijación ala-fuselaje",
-            detail: "acero mecanizado"
+            note: "acero mecanizado"
         },
         {
             id: "71",
             name: "Costilla de fijación ala-fuselaje",
-            detail: "titanio, con recogidas (delantera y trasera) mecanizadas integralmente"
+            note: "titanio, con recogidas (delantera y trasera) mecanizadas integralmente"
         },
         {
             id: "72",
             name: "Herrajes de soporte y muñones del tren de aterrizaje principal (MLG)",
-            detail: "titanio"
+            note: "titanio"
         },
         {
             id: "73",
@@ -367,7 +362,7 @@ export default {
         {
             id: "74",
             name: "Larguero auxiliar del tren de aterrizaje principal (MLG)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "75",
@@ -376,19 +371,17 @@ export default {
         {
             id: "76",
             name: "Ala principal",
-            detail: "Vought Aircraft Industries, construcción mixta de aleación de aluminio y composite de grafito con revestimiento de composite de grafito"
+            note: "Vought Aircraft Industries, construcción mixta de aleación de aluminio y composite de grafito con revestimiento de composite de grafito"
         },
         {
             id: "77",
             name: "Largueros del ala",
-            note: 'construcción de cuatro largueros en sección "I" (interna) y construcción de tres largueros externamente',
-            detail: "Vought Aircraft Industries"
+            note: 'Vought Aircraft Industries, construcción de cuatro largueros en sección "I" (interna) y construcción de tres largueros externamente'
         },
         {
             id: "78",
             name: "Borde de ataque del ala",
-            note: "desmontable",
-            detail: "estructura compuesta"
+            note: "desmontable, estructura composite"
         },
         {
             id: "79",
@@ -397,7 +390,7 @@ export default {
         {
             id: "80",
             name: "Costilla deflectora del ala",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "81",
@@ -406,7 +399,7 @@ export default {
         {
             id: "82",
             name: "Punta de ala desmontable",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "83",
@@ -423,7 +416,7 @@ export default {
         {
             id: "86",
             name: "Zona de lastre delantera",
-            detail: "ambos lados"
+            note: "ambos lados"
         },
         {
             id: "A1",
@@ -436,7 +429,7 @@ export default {
         {
             id: "A3",
             name: "Intercambiador de calor (ECS) del compartimiento de aviónica delantero",
-            detail: "enfriado por combustible"
+            note: "enfriado por combustible"
         },
         {
             id: "A4",
@@ -445,7 +438,7 @@ export default {
         {
             id: "A5",
             name: "Botella de nitrógeno seco",
-            detail: "sistema de presurización"
+            note: "sistema de presurización"
         },
         {
             id: "A6",
@@ -475,7 +468,7 @@ export default {
         {
             id: "A11",
             name: "Detector de hielo",
-            detail: "montado en el lado de estribor"
+            note: "montado en el lado de estribor"
         },
         {
             id: "A12",
@@ -503,12 +496,12 @@ export default {
         {
             id: "C5",
             name: "Alerón de dos partes montado en bisagra",
-            detail: "construcción mixta"
+            note: "construcción mixta"
         },
         {
             id: "C6",
             name: "Ruddervator exterior montado en bisagra",
-            detail: "construcción mixta"
+            note: "construcción mixta"
         },
         {
             id: "C7",
@@ -517,7 +510,7 @@ export default {
         {
             id: "C8",
             name: "Ruddervator interior",
-            detail: "construcción mixta"
+            note: "construcción mixta"
         },
         {
             id: "E1",
@@ -542,7 +535,7 @@ export default {
         {
             id: "E5",
             name: "Sonda de temperatura total del aire",
-            detail: "montada en el lado de estribor",
+            note: "montada en el lado de estribor",
             body: "Mide la temperatura del aire para ajustes en el rendimiento del motor."
         },
         {
@@ -719,7 +712,7 @@ export default {
             id: "E39",
             name: "Computadora integrada de gestión de misiones (IMMC)",
             note: "dos",
-            body: "Centraliza el control de las misiones y gestiona los sistemas críticos."
+            body: "Centraliza el control de las misiones, ejecuta algoritmos de vuelo, y gestiona los sistemas críticos."
         },
         {
             id: "E40",
@@ -745,7 +738,7 @@ export default {
         {
             id: "E44",
             name: "Antenas UHF LOS",
-            detail: "transmisión por lado de babor, recepción por lado de estribor",
+            note: "transmisión por lado de babor, recepción por lado de estribor",
             body: "Permiten comunicación en línea de vista (LOS) en la banda UHF."
         },
         {
@@ -781,7 +774,7 @@ export default {
         {
             id: "E51",
             name: "Generador de frecuencia variable de 25kVA y generador de CC",
-            detail: "ubicado en la caja de accesorios",
+            note: "ubicado en la caja de accesorios",
             body: "Proporciona energía eléctrica de alta capacidad y corriente continua."
         },
         {
@@ -808,7 +801,7 @@ export default {
         {
             id: "E56",
             name: "Antena de GPS diferencial",
-            detail: "ambos lados",
+            note: "ambos lados",
             body: "Mejora la precisión del posicionamiento GPS mediante correcciones diferenciales."
         },
         {
@@ -1124,7 +1117,7 @@ export default {
         {
             id: "P2",
             name: "Caja del ventilador y conducto de bypass",
-            detail: "con anillo de contención de Kevlar"
+            note: "con anillo de contención de Kevlar"
         },
         {
             id: "P3",
@@ -1175,13 +1168,12 @@ export default {
         {
             id: "U1",
             name: "Unidad de tren de aterrizaje delantero (NLG) modificada del CF-5F",
-            note: "completamente retráctil hacia adelante, controlada electrónicamente y actuada hidráulicamente",
-            detail: "Heroux"
+            note: "Heroux; completamente retráctil hacia adelante, controlada electrónicamente y actuada hidráulicamente"
         },
         {
             id: "U2",
             name: "Puertas del tren de aterrizaje delantero (NLG)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "U3",
@@ -1194,8 +1186,7 @@ export default {
         {
             id: "U5",
             name: "Puerta interior del tren de aterrizaje principal (MLG)",
-            note: "cerrada en tierra",
-            detail: "composite"
+            note: "composite; cerrada en tierra"
         },
         {
             id: "U6",
@@ -1208,13 +1199,12 @@ export default {
         {
             id: "U8",
             name: "Unidad del tren de aterrizaje principal (MLG), retráctil hacia adentro, actuada hidráulicamente",
-            note: "con frenos de disco múltiples anti-deslizamiento controlados electrónicamente",
-            detail: "Heroux/Goodrich"
+            note: "Heroux/Goodrich; con frenos de disco múltiples anti-deslizamiento controlados electrónicamente"
         },
         {
             id: "U9",
             name: "Carcasa aerodinámica del tren de aterrizaje principal (MLG) (delantera)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "U10",
@@ -1223,7 +1213,7 @@ export default {
         {
             id: "U11",
             name: "Puerta exterior del tren de aterrizaje principal (MLG)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "U12",
@@ -1232,7 +1222,7 @@ export default {
         {
             id: "U13",
             name: "Carcasa aerodinámica del tren de aterrizaje principal (MLG) (trasera)",
-            detail: "composite"
+            note: "composite"
         },
         {
             id: "U14",

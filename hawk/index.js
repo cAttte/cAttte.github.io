@@ -64,13 +64,13 @@ window.addEventListener("load", () => {
 
     let searchOpen = false
     searchButton.addEventListener("click", () => toggleSearch(!searchOpen))
-    searchInput.addEventListener("blur", () => toggleSearch(false))
+    searchInput.addEventListener("blur", () => setTimeout(() => toggleSearch(false), 100))
 
     const toggleSearch = open => {
         searchOpen = open
         open ? searchInput.focus() : searchInput.blur()
         if (!open) {
-            results.style.opacity = 0
+            results.style.display = "none"
             searchInput.value = ""
         }
 
@@ -86,8 +86,12 @@ window.addEventListener("load", () => {
         const container = document.getElementById("results")
         container.replaceChildren()
         const query = searchInput.value.toLowerCase()
-        if (!query) return (container.style.opacity = 0)
-        else container.style.opacity = 100
+        console.log(query)
+        if (!query) return (container.style.display = "none")
+        else {
+            console.log("ok man")
+            container.style.display = "revert-layer"
+        }
 
         const results = fuzzysort
             .go(query, data.es.items, { threshold: 0.4, keys: ["id_prep", "name_prep", "en.id_prep", "en.name_prep"] })
